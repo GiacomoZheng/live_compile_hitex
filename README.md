@@ -10,3 +10,7 @@ Arguments:
 Options:
   -h, --help     Print help
   -V, --version  Print version
+
+## BUGs
+
+The `output-dir` seems not work. I will check if it is my problem or `hilatex`'s problem.
