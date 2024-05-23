@@ -1,0 +1,9 @@
+[package]
+name = "live_compile_hitex"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4.38"
+clap = { version = "4.5.4", features = ["derive"] }
+inline_colorization = "0.1.6"
