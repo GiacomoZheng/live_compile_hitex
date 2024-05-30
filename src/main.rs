@@ -13,13 +13,24 @@ use inline_colorization::{
     color_red as ERROR,
     // color_magenta as DEBUG, 
     color_bright_blue as INFO, 
-    color_yellow as NOTE, 
+    color_yellow as WARN, 
 };
 const RESET: &'static str = "\u{1b}[39m\u{1b}[49m";
 
 use chrono::Local;
 fn now() -> String {Local::now().format("%H:%M:%S").to_string()}
 
+use std::io::{self, Write, BufRead};
+fn input(prompt: &str) -> io::Result<String> {
+    print!("{}", prompt);
+    io::stdout().flush()?;
+    io::stdin()
+        .lock()
+        .lines()
+        .next()
+        .unwrap()
+        .map(|x| x.trim_end().to_owned())
+}
 
 use std::str::from_utf8;
 fn compile_tex() -> bool {
@@ -51,7 +62,7 @@ fn compile_bib() -> bool {
             println!("{ERROR}{}{RESET} -- biber", error_line);
             flag = false;
         } else if error_line.starts_with("WARN") {
-            println!("{NOTE}{}{RESET}", error_line);
+            println!("{WARN}{}{RESET}", error_line);
         }
     }
 
@@ -106,6 +117,7 @@ fn watch_hnt_files() {
 
     // watch the ref.bib
     if let Some(path) = BIB_MAIN {
+        let tx = tx.clone();
         let path = PathBuf::from(path);
         println!("{INFO}INFO:{RESET} thread by path {:?}", path);
         thread::spawn(move || {
@@ -115,6 +127,31 @@ fn watch_hnt_files() {
             }
         });
     }
+
+    // spawn a new thread if a new `.tex` created
+    let tx = tx.clone();
+    thread::spawn(move || {
+        loop {
+            // not perfect, but works
+            let path = PathBuf::from(input("> ").unwrap()).with_extension("tex"); 
+
+            let output = Command::new("touch").arg(path.to_str().unwrap()).output().expect("failed to execute process");
+            println!("{}", from_utf8(&output.stdout).unwrap());
+        
+            if path.is_file() {
+                let tx = tx.clone();
+                println!("{INFO}INFO:{RESET} thread by path {:?}", path);
+                thread::spawn(move || {
+                    loop {
+                        hnt_time = send_by_changes(&tx, &path, hnt_time, FileType::TEX);
+                        thread::sleep(Duration::from_millis(100));
+                    }
+                });
+            } else {
+                println!("{WARN}WARN:{RESET} No such a .tex file");
+            }
+        }
+    });
 
     loop {
         let (file_type, path) = rx.recv().unwrap();

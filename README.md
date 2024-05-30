@@ -9,13 +9,15 @@ Arguments:
 
 ## CHANGELOG
 
+Version 1.0.3: Now if you want to create a new `.tex` file, you can enter the path into the command line, and it will create the file and thread for you (not perfect yet).
+
 Version 1.0.2: Now it will compile everything, open the `.hnt` (mac only), and then start to watch the changes.
+
 Version 1.0.1: Now it can detect the `ref.bib` and run `biber main` automatically.
 
 ## BUGs
 
-* If you create a new `.tex` file, you need to rerun this program.
-* The `hilatex` and `biber` should run once as soon as the program starts.
+To be found.
 
 ### BUGs to check
 
