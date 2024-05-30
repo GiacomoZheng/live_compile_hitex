@@ -133,10 +133,12 @@ fn watch_hnt_files() {
     thread::spawn(move || {
         loop {
             // not perfect, but works
-            let path = PathBuf::from(input("> ").unwrap()).with_extension("tex"); 
+            let path = PathBuf::from(input("> ").unwrap()); 
 
-            let output = Command::new("touch").arg(path.to_str().unwrap()).output().expect("failed to execute process");
-            println!("{}", from_utf8(&output.stdout).unwrap());
+            let output = Command::new("touch").arg(path.with_extension("tex").to_str().unwrap()).output().expect("failed to execute process");
+            eprintln!("{ERROR}{}{RESET}", from_utf8(&output.stderr).unwrap());
+            let output = Command::new("mkdir").arg(path.with_extension("").to_str().unwrap()).output().expect("failed to execute process");
+            eprintln!("{ERROR}{}{RESET}", from_utf8(&output.stderr).unwrap());
         
             if path.is_file() {
                 let tx = tx.clone();
