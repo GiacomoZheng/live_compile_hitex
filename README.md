@@ -1,3 +1,5 @@
+# I have given up this project and go back to use pdflatex.
+
 # live_compile_hitex
 
 Update `.tex` into `.hnt` by `hilatex`, whenever changes happen. Do not forget to set the autoreload functionality of hintview.
